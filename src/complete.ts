@@ -152,11 +152,14 @@ export function completeFromSchema(schema: {[table: string]: readonly (string | 
 }
 
 export function completeKeywords(keywords: {[name: string]: number}, upperCase: boolean) {
-  let completions =  Object.keys(keywords).map(keyword => ({
-    label: upperCase ? keyword.toUpperCase() : keyword,
-    type: keywords[keyword] == Type ? "type" : keywords[keyword] == Keyword ? "keyword" : "variable",
-    boost: -1
-  }))
+  let completions =  Object.keys(keywords).map(keyword => {
+    let type = keywords[keyword] == Type ? "type" : keywords[keyword] == Keyword ? "keyword" : "variable"
+    return {
+      label: upperCase && type === "keyword" ? keyword.toUpperCase() : keyword,
+      type,
+      boost: -1
+    }
+  })
   return ifNotIn(["QuotedIdentifier", "SpecialVar", "String", "LineComment", "BlockComment", "."],
                  completeFromList(completions))
 }
